@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -1188,18 +1189,18 @@
         <h2 class="section-title">The Visionaries</h2>
         <div class="swiper teamSwiper">
             <div class="swiper-wrapper">
-
+                
                 <!-- SHARATH K V -->
                 <div class="swiper-slide glass-panel team-card">
                     <!-- Added an onerror fallback so UI doesn't break if sharath.jpeg is not found -->
-                    <img src="./assets/sharath.jpeg" alt="UI/UX Designer and Team Leader" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop'">
+                    <img src="sharath.jpeg" alt="UI/UX Designer and Team Leader" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop'">
                     <h3>SHARATH K V</h3>
                     <div class="role">UI/UX Designer (Team Leader) <br> CSE B II</div>
                     <p>Leading the team and crafting the fluid, intuitive glassmorphism user experience.</p>
                     <!-- Fallback also added in the modal function call just in case -->
                     <button onclick="openTeamModal('SHARATH K V', 'UI/UX Designer (Team Leader) | CSE B II', 'As the Team Leader and UI/UX Designer from CSE B II, Sharath specializes in weaving cinematic visual stories into seamless digital interfaces. He guided the central vision of CIAURA, ensuring the user journey perfectly matches the emotional weight of our thousand memories.', 'sharath.jpeg')">View Details</button>
                 </div>
-
+                
                 <!-- YASWANTH M -->
                 <div class="swiper-slide glass-panel team-card">
                     <img src="YASH.jpeg" alt="Audio Designer" onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop'">
@@ -1208,7 +1209,7 @@
                     <p>Curating the immersive atmospheric soundscapes and interactive audio experiences.</p>
                     <button onclick="openTeamModal('YASWANTH M', 'Audio Designer | CSE B II', 'Representing CSE B II, Yaswanth is the auditory architect behind the project. As Audio Designer, he selected and integrated the ethereal background scores and interactive sound effects that give the One Day exhibition its emotional depth and soul.', 'YASH.jpeg')">View Details</button>
                 </div>
-
+                
                 <!-- SHREYA RAMANATHAN -->
                 <div class="swiper-slide glass-panel team-card">
                     <img src="shre.jpeg" alt="Poster Designer" onerror="this.src='https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop'">
@@ -1557,13 +1558,13 @@
             }
         });
 
-        // --- High-DPI Network Particle Engine (Canvas) ---
+        // --- High-DPI Cherry Blossom Particle Engine (Canvas) ---
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
 
         let logicalWidth, logicalHeight;
         let particles = [];
-        const numParticles = 75; // Adjust count for performance vs density
+        const numParticles = 60; // Adjust count for performance vs density
 
         function resizeCanvas() {
             const dpr = window.devicePixelRatio || 1;
@@ -1582,32 +1583,49 @@
         class Particle {
             constructor() {
                 this.x = Math.random() * logicalWidth;
-                this.y = Math.random() * logicalHeight;
-                this.size = Math.random() * 2 + 1; // 1 to 3px radius
-                this.speedX = (Math.random() - 0.5) * 1.5; // Drift horizontally
-                this.speedY = (Math.random() - 0.5) * 1.5; // Drift vertically
+                this.y = Math.random() * logicalHeight - logicalHeight;
+                this.size = Math.random() * 5 + 3; // Petal size
+                this.speedY = Math.random() * 1.5 + 0.5; // Fall speed
+                this.speedX = (Math.random() - 0.5) * 1; // Drift horizontal
+                this.angle = Math.random() * Math.PI * 2;
+                this.spin = (Math.random() - 0.5) * 0.05; // Rotation speed
+                this.sway = Math.random() * Math.PI * 2;
+                this.swaySpeed = Math.random() * 0.02 + 0.01;
             }
 
             update() {
-                this.x += this.speedX;
                 this.y += this.speedY;
+                this.x += this.speedX + Math.sin(this.sway) * 1.2;
+                this.angle += this.spin;
+                this.sway += this.swaySpeed;
 
-                // Bounce off edges smoothly
-                if (this.x < 0 || this.x > logicalWidth) this.speedX *= -1;
-                if (this.y < 0 || this.y > logicalHeight) this.speedY *= -1;
+                // Reset to top when falling off screen
+                if (this.y > logicalHeight + 20) {
+                    this.y = -20;
+                    this.x = Math.random() * logicalWidth;
+                }
+                if (this.x > logicalWidth + 20) this.x = -20;
+                if (this.x < -20) this.x = logicalWidth + 20;
             }
 
             draw() {
                 ctx.save();
                 const isLight = document.body.getAttribute('data-theme') === 'light';
-                const color = isLight ? '#ff69b4' : '#ffffff';
+                // Cherry blossom colors 
+                const color = isLight ? 'rgba(255, 105, 180, 0.7)' : 'rgba(255, 182, 193, 0.6)';
+
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
 
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                // Draw a simple petal shape using bezier curves
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(this.size, -this.size, this.size * 2, this.size / 2, 0, this.size);
+                ctx.bezierCurveTo(-this.size * 2, this.size / 2, -this.size, -this.size, 0, 0);
+
                 ctx.fillStyle = color;
-                ctx.shadowBlur = 10;
+                ctx.shadowBlur = 8;
                 ctx.shadowColor = color;
-                ctx.globalAlpha = 0.6;
                 ctx.fill();
                 ctx.restore();
             }
@@ -1619,32 +1637,10 @@
 
         function animateParticles() {
             ctx.clearRect(0, 0, logicalWidth, logicalHeight);
-            const isLight = document.body.getAttribute('data-theme') === 'light';
 
             for (let i = 0; i < particles.length; i++) {
                 particles[i].update();
                 particles[i].draw();
-
-                // Connect particles if they are close
-                for (let j = i; j < particles.length; j++) {
-                    const dx = particles[i].x - particles[j].x;
-                    const dy = particles[i].y - particles[j].y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-
-                    if (distance < 120) {
-                        ctx.beginPath();
-                        const opacity = 1 - (distance / 120); // Fade line based on distance
-
-                        ctx.strokeStyle = isLight ?
-                            `rgba(255, 105, 180, ${opacity * 0.4})` :
-                            `rgba(255, 255, 255, ${opacity * 0.3})`;
-
-                        ctx.lineWidth = 1;
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.stroke();
-                    }
-                }
             }
             requestAnimationFrame(animateParticles);
         }
@@ -1761,10 +1757,9 @@
 
                 const result = await response.json();
 
-                // === FIX WAS APPLIED HERE: Removing spaces before optional chaining `?.` ===
-                const candidate = result.candidates ? .[0];
+                const candidate = result.candidates?.[0];
 
-                if (candidate && candidate.content ? .parts ? .[0] ? .text) {
+                if (candidate && candidate.content?.parts?.[0]?.text) {
                     const text = candidate.content.parts[0].text;
                     chatHistory.push({
                         role: "user",
