@@ -1136,7 +1136,7 @@
 
 <body>
 
-    <audio id="bgm-audio" loop preload="none" src="https://assets.mixkit.co/music/preview/mixkit-ethereal-fairy-logo-474.mp3"></audio>
+    <audio id="bgm-audio" loop preload="none" src="./assets/sound.mp3"></audio>
     <audio id="hover-audio" preload="none" src="https://assets.mixkit.co/sfx/preview/mixkit-interface-click-1126.mp3"></audio>
 
     <canvas id="particles-canvas"></canvas>
@@ -1259,12 +1259,12 @@
         <h2 class="section-title">The Masterpiece</h2>
         <div class="showcase-container glass-panel">
             <div class="poster-wrapper" onclick="openLightbox()">
-                <img src="https://images.unsplash.com/photo-1536697246787-1f276329e417?q=80&w=1200&auto=format&fit=crop" alt="One Day A Thousand Memories Poster" id="main-poster-img">
+                <img src="./assets/poster.webp" alt="One Day A Thousand Memories Poster" id="main-poster-img">
                 <div class="poster-overlay">
                     <i class="fas fa-search-plus"></i>
                 </div>
             </div>
-            <a href="https://images.unsplash.com/photo-1536697246787-1f276329e417?q=80&w=1200&auto=format&fit=crop" target="_blank" class="download-btn" download><i class="fas fa-download"></i> Download High-Res</a>
+            <a href="./assets/poster.webp" target="_blank" class="download-btn" download><i class="fas fa-download"></i> Download High-Res</a>
         </div>
     </section>
 
@@ -1538,7 +1538,7 @@
 
         function openTeamModal(name, role, description, imgUrl) {
             // Include a fallback image setup if the modal image fails to load
-            const fallbackUrl = 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop';
+            const fallbackUrl = './assets/poster.webp';
             teamModalBody.innerHTML = `
                 <img src="${imgUrl}" alt="${name}" onerror="this.src='${fallbackUrl}'">
                 <h3>${name}</h3>
