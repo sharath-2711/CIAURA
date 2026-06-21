@@ -496,11 +496,14 @@
         .swiper-pagination-bullet { background: var(--text-muted) !important; width: 10px; height: 10px; transition: all 0.3s;}
         .swiper-pagination-bullet-active { background: #ffb6c1 !important; width: 30px; border-radius: 5px;}
 
+        /* --- UPDATED TIMELINE STYLES --- */
         .timeline-wrapper {
             position: relative;
             max-width: 1100px;
             margin: 0 auto;
             padding: 40px 0;
+            display: flex;
+            flex-direction: column;
         }
         
         .timeline-wrapper::after {
@@ -516,15 +519,15 @@
         .timeline-card {
             padding: 40px;
             position: relative;
-            width: calc(50% - 40px);
+            width: calc(50% - 50px); /* Creates proper gap from the center line */
             margin-bottom: 50px;
             border-radius: 20px;
-            /* Will be animated via JS 3D tilt */
             transform-style: preserve-3d;
         }
         
-        .timeline-card:nth-child(odd) { left: 0; text-align: right; }
-        .timeline-card:nth-child(even) { left: calc(50% + 40px); text-align: left; }
+        /* Flexbox handles the alternating alignment cleanly */
+        .timeline-card:nth-child(odd) { align-self: flex-start; text-align: right; margin-right: auto; }
+        .timeline-card:nth-child(even) { align-self: flex-end; text-align: left; margin-left: auto; }
         
         .timeline-card:hover {
             border-color: rgba(255, 182, 193, 0.4);
@@ -546,8 +549,10 @@
         }
         
         .timeline-card:hover::before { transform: scale(1.3); background: #ffb6c1; }
-        .timeline-card:nth-child(odd)::before { right: -52px; }
-        .timeline-card:nth-child(even)::before { left: -52px; }
+        
+        /* Exact math for dots alignment based on the 50px gap from center */
+        .timeline-card:nth-child(odd)::before { right: -62px; } 
+        .timeline-card:nth-child(even)::before { left: -62px; } 
         
         .timeline-card .date {
             display: inline-block;
@@ -623,6 +628,56 @@
         
         .poster-wrapper:hover .poster-overlay i { transform: scale(1); }
 
+        /* --- UPDATED DOWNLOAD BUTTON --- */
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 40px;
+            padding: 16px 35px;
+            background: linear-gradient(135deg, rgba(255, 182, 193, 0.1), rgba(255, 105, 180, 0.05));
+            border: 1px solid rgba(255, 182, 193, 0.4);
+            border-radius: 50px;
+            color: var(--text-main);
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px -10px rgba(255, 182, 193, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .download-btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,182,193,0.4), transparent);
+            transition: left 0.6s ease;
+            z-index: -1;
+        }
+        
+        .download-btn:hover {
+            background: #ffb6c1;
+            color: #050508;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 182, 193, 0.5);
+            border-color: #ffb6c1;
+        }
+        
+        .download-btn:hover::before { left: 100%; }
+        
+        .download-btn i {
+            font-size: 1.3rem;
+            transition: transform 0.3s;
+        }
+        
+        .download-btn:hover i {
+            transform: translateY(3px); /* Interactive arrow bounce */
+        }
+
         #lightbox, .custom-modal {
             position: fixed;
             inset: 0;
@@ -651,6 +706,7 @@
         
         #lightbox.active img { transform: scale(1); }
         
+        /* --- UPDATED POPCARD MODAL --- */
         .modal-content {
             position: relative;
             max-width: 550px;
@@ -660,7 +716,17 @@
             border-radius: 24px;
             transform: scale(0.9) translateY(20px);
             transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 0 0 1px var(--glass-highlight);
+            /* Upgraded Styling for Popcard */
+            background: rgba(15, 15, 20, 0.95);
+            border: 1px solid rgba(255, 182, 193, 0.3);
+            border-top: 3px solid #ffb6c1;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 40px rgba(255, 182, 193, 0.15), inset 0 0 0 1px var(--glass-highlight);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        [data-theme="light"] .modal-content {
+            background: rgba(255, 255, 255, 0.95);
         }
         
         .custom-modal.active .modal-content { transform: scale(1) translateY(0); }
@@ -677,16 +743,63 @@
             cursor: pointer;
             transition: all 0.3s;
             display: flex; align-items: center; justify-content: center;
+            z-index: 10;
         }
         
         .close-modal:hover { background: #ffb6c1; color: #000; transform: rotate(90deg); }
         
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
         .modal-body img {
-            width: 160px; height: 160px;
+            width: 170px; height: 170px;
             border-radius: 50%; object-fit: cover;
             margin-bottom: 25px;
-            border: 4px solid var(--glass-bg);
-            box-shadow: 0 0 0 2px var(--primary-glow), 0 15px 30px rgba(0,0,0,0.3);
+            border: 4px solid var(--bg-color);
+            box-shadow: 0 0 0 3px #ffb6c1, 0 20px 40px rgba(255, 182, 193, 0.4);
+            animation: modalAvatarFloat 3s ease-in-out infinite;
+        }
+        
+        @keyframes modalAvatarFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        
+        .modal-body h3 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            background: linear-gradient(to right, #fff, #ffb6c1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        [data-theme="light"] .modal-body h3 {
+            background: linear-gradient(to right, #111, #ff69b4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .modal-body .role {
+            font-size: 1rem;
+            color: #ffb6c1;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 25px;
+            padding: 6px 18px;
+            background: rgba(255, 182, 193, 0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 182, 193, 0.2);
+        }
+        
+        .modal-body p {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+            max-width: 90%;
         }
         
         #close-lightbox {
@@ -742,6 +855,7 @@
             text-align: center;
             position: relative;
             background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+            overflow: visible !important; /* Prevents the back-to-top button from being clipped */
         }
         
         .footer-links {
@@ -757,7 +871,7 @@
             flex-direction: column;
             align-items: center;
             gap: 8px;
-            color: #ffb6c1; /* Changed to site's accent color */
+            color: #ffb6c1;
             text-decoration: none;
             font-size: 0.9rem;
             text-transform: uppercase;
@@ -806,21 +920,35 @@
             box-shadow: 0 10px 20px rgba(255, 182, 193, 0.4);
         }
         
+        /* --- UPDATED BACK TO TOP BUTTON --- */
         #back-to-top {
-            position: absolute; right: 5vw; top: -25px;
-            width: 50px; height: 50px;
-            background: var(--glass-bg); backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border); border-radius: 50%;
+            position: absolute; right: 5vw; top: -30px;
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, #ffb6c1, #ff69b4);
+            border: 3px solid var(--bg-color);
+            border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            color: var(--text-main); font-size: 1.2rem;
+            color: #050508;
+            font-size: 1.5rem;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 25px rgba(255, 105, 180, 0.6);
             z-index: 10;
+            animation: floatUpBtn 2.5s infinite ease-in-out;
+        }
+        
+        #back-to-top i { pointer-events: none; }
+        
+        @keyframes floatUpBtn {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
         
         #back-to-top:hover {
-            background: #ffb6c1; color: #000;
-            transform: translateY(-10px);
+            transform: translateY(-15px) scale(1.1);
+            animation: none;
+            box-shadow: 0 15px 35px rgba(255, 105, 180, 0.8);
+            color: #000;
+            background: linear-gradient(135deg, #ffdfe5, #ffb6c1);
         }
 
         #audio-toggle {
@@ -841,12 +969,21 @@
             transform: scale(1.1) rotate(5deg);
         }
 
+        /* --- MEDIA QUERIES --- */
         @media (max-width: 1024px) {
             .contact-details { grid-template-columns: 1fr; }
             #back-to-top { right: 20px; }
-            .timeline-wrapper::after { left: 30px; transform: none; }
-            .timeline-card { width: calc(100% - 70px); left: 70px !important; margin-bottom: 40px; text-align: left !important; }
-            .timeline-card::before { left: -52px !important; right: auto !important; }
+            
+            /* Responsive Timeline Fixes */
+            .timeline-wrapper::after { left: 40px; transform: none; }
+            .timeline-card {
+                width: calc(100% - 90px);
+                align-self: flex-end !important;
+                margin-left: auto !important;
+                text-align: left !important;
+                margin-bottom: 40px;
+            }
+            .timeline-card::before { left: -62px !important; right: auto !important; }
         }
         
         @media (max-width: 900px) {
@@ -871,9 +1008,12 @@
             .hero-content { padding: 20px; margin-top: 70px; }
             .swiper-slide { width: 280px; padding: 30px 20px; }
             .team-card img { width: 100px; height: 100px; }
-            .timeline-card { padding: 25px; width: calc(100% - 50px); left: 50px !important; }
+            
+            /* Tiny screen Timeline adjustments */
             .timeline-wrapper::after { left: 20px; }
-            .timeline-card::before { left: -42px !important; width: 20px; height: 20px; top: 30px; }
+            .timeline-card { width: calc(100% - 60px); }
+            .timeline-card::before { left: -50px !important; width: 20px; height: 20px; top: 30px; }
+            
             #audio-toggle { width: 50px; height: 50px; bottom: 20px; left: 20px; font-size: 1.2rem; }
             .contact-info { padding: 30px 20px; }
         }
@@ -1012,6 +1152,7 @@
         <img src="" alt="Fullscreen Poster" id="lightbox-img">
     </div>
 
+    <!-- Enhanced Popcard Modal -->
     <div id="team-modal" class="custom-modal">
         <div class="modal-content glass-panel">
             <button class="close-modal" aria-label="Close Modal" onclick="closeTeamModal()"><i class="fas fa-times"></i></button>
@@ -1047,7 +1188,6 @@
         <a href="#hero" id="back-to-top" aria-label="Back to Top"><i class="fas fa-arrow-up"></i></a>
         <div class="footer-content">
             <h4>CIAURA (SCE)</h4>
-            <!-- UPDATED: Replaced original description with the authentic SCE description -->
             <p style="color: var(--text-muted); margin-bottom: 10px; text-align: center; line-height: 1.5;">
                 <strong style="color: var(--text-main); font-weight: 500;">Saranathan College of Engineering</strong><br>
                 <span style="font-size: 0.85rem;">Approved by AICTE, New Delhi | Affiliated to Anna University, Chennai<br>Accredited by NAAC with 'A+' Grade</span>
@@ -1105,7 +1245,7 @@
         });
 
         // Add subtle interaction sounds
-        document.querySelectorAll('nav a, button, .btn-glass, .contact-item, .social-icons a, .poster-wrapper, .swiper-slide').forEach(el => {
+        document.querySelectorAll('nav a, button, .btn-glass, .contact-item, .social-icons a, .poster-wrapper, .swiper-slide, .download-btn').forEach(el => {
             el.addEventListener('mouseenter', () => {
                 hoverAudio.currentTime = 0;
                 hoverAudio.play().catch(() => {});
@@ -1167,10 +1307,9 @@
             }, 500);
         }, 4000);
 
-        // 10/10 Upgrade: 3D Mouse Tilt Effect for Premium Feel
         const applyTilt = (element, strength = 15) => {
             element.addEventListener('mousemove', (e) => {
-                if (window.innerWidth < 1024) return; // Disable on mobile
+                if (window.innerWidth < 1024) return;
                 const rect = element.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
@@ -1189,11 +1328,10 @@
             });
             
             element.addEventListener('mouseenter', () => {
-                element.style.transition = 'none'; // remove transition during mouse move
+                element.style.transition = 'none'; 
             });
         };
 
-        // Apply tilt to glass elements
         document.querySelectorAll('.timeline-card, .contact-item, .showcase-container').forEach(el => applyTilt(el, 5));
 
         const swiper = new Swiper(".teamSwiper", {
@@ -1221,12 +1359,9 @@
             }
         });
 
-        // 10/10 Upgrade: Unified Cinematic Scroll Observer
-        // Dynamically add 'reveal' class to elements we want to animate
         const elementsToReveal = document.querySelectorAll('.section-title, .timeline-card, .poster-wrapper, .contact-item, .footer-content');
         elementsToReveal.forEach((el, index) => {
             el.classList.add('reveal');
-            // Stagger items in a grid/list
             if(el.classList.contains('contact-item')) {
                 el.style.transitionDelay = `${(index % 3) * 0.15}s`;
             }
@@ -1236,8 +1371,6 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('active');
-                    // Optional: Unobserve after revealing for better performance
-                    // revealObserver.unobserve(entry.target); 
                 }
             });
         }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
@@ -1251,7 +1384,7 @@
         window.openLightbox = () => {
             lightboxImg.src = mainPoster.src;
             lightbox.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Prevent scrolling
+            document.body.style.overflow = 'hidden';
         };
 
         window.closeLightbox = () => {
@@ -1292,7 +1425,7 @@
         let logicalWidth = window.innerWidth;
         let logicalHeight = window.innerHeight;
         let petals = [];
-        const numPetals = 25; // Reduced cherry blossom count for a minimal look
+        const numPetals = 25; 
         
         function resizeCanvas() {
             const dpr = window.devicePixelRatio || 1;
@@ -1304,7 +1437,6 @@
             ctx.scale(dpr, dpr);
         }
 
-        // Run synchronously immediately so width/height are populated
         resizeCanvas();
 
         let resizeTimeout;
@@ -1320,15 +1452,14 @@
             
             reset(initial = false) {
                 this.x = Math.random() * logicalWidth;
-                // Distribute across screen initially, otherwise spawn at top
                 this.y = initial ? Math.random() * logicalHeight : -30;
-                this.size = Math.random() * 3 + 2; // Reduced petal size for a subtler effect
-                this.speedY = Math.random() * 0.5 + 0.2; // Significantly slower vertical fall
-                this.speedX = (Math.random() - 0.5) * 0.8; // Gentler horizontal drift
+                this.size = Math.random() * 3 + 2; 
+                this.speedY = Math.random() * 0.5 + 0.2; 
+                this.speedX = (Math.random() - 0.5) * 0.8; 
                 this.angle = Math.random() * Math.PI * 2;
-                this.spin = (Math.random() - 0.5) * 0.02; // Slower rotation
+                this.spin = (Math.random() - 0.5) * 0.02; 
                 this.sway = Math.random() * Math.PI * 2;
-                this.swaySpeed = Math.random() * 0.01 + 0.002; // Slower swaying
+                this.swaySpeed = Math.random() * 0.01 + 0.002; 
             }
 
             update() {
@@ -1337,7 +1468,6 @@
                 this.angle += this.spin; 
                 this.sway += this.swaySpeed;
 
-                // Reset when it goes off screen
                 if (this.y > logicalHeight + 30) this.reset();
                 if (this.x > logicalWidth + 30) this.x = -30;
                 if (this.x < -30) this.x = logicalWidth + 30;
@@ -1349,12 +1479,10 @@
                 ctx.rotate(this.angle);
 
                 ctx.beginPath();
-                // Authentic Sakura (Cherry Blossom) petal shape
                 ctx.moveTo(0, 0);
                 ctx.bezierCurveTo(this.size * 1.5, -this.size, this.size * 2, this.size, 0, this.size * 1.5);
                 ctx.bezierCurveTo(-this.size * 2, this.size, -this.size * 1.5, -this.size, 0, 0);
 
-                // Update color dynamically based on theme
                 const isLight = document.body.getAttribute('data-theme') === 'light';
                 const fillColor = isLight ? 'rgba(255, 105, 180, 0.6)' : 'rgba(255, 182, 193, 0.5)';
                 
