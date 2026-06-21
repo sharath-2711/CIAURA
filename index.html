@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -474,12 +473,17 @@
             position: relative;
             cursor: pointer;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
         }
         
+        /* FIX: Ensure image scales correctly without invalid HTML width */
         .poster-wrapper img {
-            width: 50%;
+            width: 100%;
+            max-width: 450px;
             height: auto;
             display: block;
+            margin: 0 auto;
             transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         
@@ -908,8 +912,11 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
+            
+            /* FIX: Cross-browser scrollbars */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 182, 193, 0.3) transparent;
         }
-        /* Custom Scrollbar for Chat */
         
         #chat-messages::-webkit-scrollbar {
             width: 6px;
@@ -994,6 +1001,25 @@
         #send-chat:hover {
             transform: scale(1.1) translateX(2px);
         }
+
+        .dot {
+            height: 6px;
+            width: 6px;
+            background-color: var(--text-muted);
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
         /* =========================================
            RESPONSIVE MOBILE STYLES
            ========================================= */
@@ -1136,8 +1162,9 @@
 
 <body>
 
-    <audio id="bgm-audio" loop preload="none" src="./assets/sound.mp3"></audio>
-    <audio id="hover-audio" preload="none" src="https://assets.mixkit.co/sfx/preview/mixkit-interface-click-1126.mp3"></audio>
+    <!-- FIX: Changed preload="none" to preload="auto" -->
+    <audio id="bgm-audio" loop preload="auto" src="./assets/sound.mp3"></audio>
+    <audio id="hover-audio" preload="auto" src="https://assets.mixkit.co/sfx/preview/mixkit-interface-click-1126.mp3"></audio>
 
     <canvas id="particles-canvas"></canvas>
 
@@ -1197,7 +1224,6 @@
                     <h3>SHARATH K V</h3>
                     <div class="role">UI/UX Designer (Team Leader) <br> CSE B II</div>
                     <p>Leading the team and crafting the fluid, intuitive glassmorphism user experience.</p>
-                    <!-- Fallback also added in the modal function call just in case -->
                     <button onclick="openTeamModal('SHARATH K V', 'UI/UX Designer (Team Leader) | CSE B II', 'As the Team Leader and UI/UX Designer from CSE B II, Sharath specializes in weaving cinematic visual stories into seamless digital interfaces. He guided the central vision of CIAURA, ensuring the user journey perfectly matches the emotional weight of our thousand memories.', './assets/sharath.jpeg')">View Details</button>
                 </div>
                 
@@ -1259,7 +1285,8 @@
         <h2 class="section-title">The Masterpiece</h2>
         <div class="showcase-container glass-panel">
             <div class="poster-wrapper" onclick="openLightbox()">
-                <img src="./assets/poster.webp" width="30% !important" alt="One Day A Thousand Memories Poster" id="main-poster-img">
+                <!-- FIX: Removed width="30% !important", replaced with cleaner CSS styling -->
+                <img src="./assets/poster.webp" alt="One Day A Thousand Memories Poster" id="main-poster-img">
                 <div class="poster-overlay">
                     <i class="fas fa-search-plus"></i>
                 </div>
@@ -1290,15 +1317,15 @@
             <div class="contact-details">
                 <div class="contact-item">
                     <i class="fas fa-envelope"></i>
-                    <span><strong>Email:</strong> contact@ciaura-sce.edu</span>
+                    <span><strong>Email:</strong> k.v.sharath2711@gmail.com</span>
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-phone"></i>
-                    <span><strong>Phone:</strong> +1 (555) 123-4567</span>
+                    <span><strong>Phone:</strong> +919384837040</span>
                 </div>
                 <div class="contact-item">
                     <i class="fas fa-map-marker-alt"></i>
-                    <span><strong>Location:</strong> Department of Arts & Design, SCE Campus</span>
+                    <span><strong>Location:</strong> CSE Dept, Saranathan College of Engg, Panjappur, Trichy, Tamilnadu</span>
                 </div>
             </div>
         </div>
@@ -1318,17 +1345,17 @@
             </div>
 
             <div class="social-icons">
-                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                <a href="#" aria-label="Behance"><i class="fab fa-behance"></i></a>
-                <a href="#" aria-label="Dribbble"><i class="fab fa-dribbble"></i></a>
+                <a href="https://instagram.com/sha.27.rath" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://github.com/sharath-2711" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://saranathan.ac.in/" target="_blank" aria-label="College Site"><i class="fas fa-university"></i></a>
             </div>
         </div>
         <div class="footer-bottom">
             &copy; 2026 CIAURA (SCE). All rights reserved. Fluid Glassmorphism Design.
         </div>
     </footer>
-<!-- 
+
+    <!-- FIX: Uncommented Chat Widget to prevent null reference JS errors -->
     <div id="chat-widget">
         <div id="chat-window" class="glass-panel">
             <div id="chat-header">
@@ -1348,7 +1375,7 @@
         <button id="chat-toggle" aria-label="Open AI Chat">
             <i class="fas fa-comment-alt"></i>
         </button>
-    </div> -->
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
 
@@ -1564,7 +1591,7 @@
 
         let logicalWidth, logicalHeight;
         let particles = [];
-        const numParticles = 60; // Adjust count for performance vs density
+        const numParticles = 30; // Restored quantity for a gentle, slow fall
 
         function resizeCanvas() {
             const dpr = window.devicePixelRatio || 1;
@@ -1584,13 +1611,13 @@
             constructor() {
                 this.x = Math.random() * logicalWidth;
                 this.y = Math.random() * logicalHeight - logicalHeight;
-                this.size = Math.random() * 5 + 3; // Petal size
-                this.speedY = Math.random() * 1.5 + 0.5; // Fall speed
-                this.speedX = (Math.random() - 0.5) * 1; // Drift horizontal
+                this.size = Math.random() * 5 + 3; // Restored to original larger size
+                this.speedY = Math.random() * 0.4 + 0.15; // Significantly slowed down fall speed
+                this.speedX = (Math.random() - 0.5) * 0.5; // Slower horizontal drift
                 this.angle = Math.random() * Math.PI * 2;
-                this.spin = (Math.random() - 0.5) * 0.05; // Rotation speed
+                this.spin = (Math.random() - 0.5) * 0.02; // Slower rotation speed
                 this.sway = Math.random() * Math.PI * 2;
-                this.swaySpeed = Math.random() * 0.02 + 0.01;
+                this.swaySpeed = Math.random() * 0.01 + 0.005; // Slower swaying motion
             }
 
             update() {
@@ -1611,8 +1638,8 @@
             draw() {
                 ctx.save();
                 const isLight = document.body.getAttribute('data-theme') === 'light';
-                // Cherry blossom colors 
-                const color = isLight ? 'rgba(255, 105, 180, 0.7)' : 'rgba(255, 182, 193, 0.6)';
+                // Minimized: Lowered opacity for subtlety 
+                const color = isLight ? 'rgba(255, 105, 180, 0.3)' : 'rgba(255, 182, 193, 0.2)';
 
                 ctx.translate(this.x, this.y);
                 ctx.rotate(this.angle);
@@ -1697,22 +1724,20 @@
             }
         }
 
-        async function fetchWithRetry(url, options, maxRetries = 3) {
-            let delay = 1000;
-            for (let i = 0; i < maxRetries; i++) {
+        // FIX: Implementation of Exponential Backoff for API requests
+        async function fetchWithRetry(url, options) {
+            const delays = [1000, 2000, 4000, 8000, 16000];
+            
+            for (let i = 0; i < delays.length; i++) {
                 try {
                     const response = await fetch(url, options);
                     if (!response.ok) {
-                        if (response.status === 429) {
-                            throw new Error('Rate limited');
-                        }
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     return response;
                 } catch (error) {
-                    if (i === maxRetries - 1) throw error;
-                    await new Promise(res => setTimeout(res, delay));
-                    delay *= 2;
+                    if (i === delays.length - 1) throw error;
+                    await new Promise(res => setTimeout(res, delays[i]));
                 }
             }
         }
