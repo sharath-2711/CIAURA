@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CIAURA (SCE) | Poster Viewing Site</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+
+    <style>
+        /* === CSS VARIABLES & RESET === */
+        
+         :root {
+            --primary-glow: rgba(255, 182, 193, 0.5);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+            --bg-color: #0a0a0f;
+            --modal-bg: rgba(10, 10, 15, 0.95);
+            --header-bg: rgba(10, 10, 15, 0.8);
+            --hero-overlay: linear-gradient(to bottom, rgba(10, 10, 15, 0.5), rgba(10, 10, 15, 0.9));
+            --hero-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        [data-theme="light"] {
+            --primary-glow: rgba(255, 105, 180, 0.3);
+            --glass-bg: rgba(0, 0, 0, 0.05);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            --text-main: #1a1a24;
+            --text-muted: rgba(0, 0, 0, 0.6);
+            --bg-color: #f4f6f9;
+            --modal-bg: rgba(244, 246, 249, 0.95);
+            --header-bg: rgba(244, 246, 249, 0.9);
+            --hero-overlay: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(244, 246, 249, 0.95));
+            --hero-shadow: 0 4px 20px rgba(255, 255, 255, 0.5);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+        
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Playfair Display', serif;
+        }
+        /* === PARTICLE CANVAS === */
+        
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        /* === FLUID GLASSMORPHISM UTILITY === */
+        
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
+        }
+        /* === NAVIGATION HEADER === */
+        
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 50px;
+            z-index: 1000;
+            transition: all 0.4s ease;
+        }
+        
+        header.scrolled {
+            background: var(--header-bg);
+            backdrop-filter: blur(20px);
+            padding: 15px 50px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            background: linear-gradient(45deg, var(--text-main), #ffb6c1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .logo p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            position: relative;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            width: 0%;
+            height: 2px;
+            background: #ffb6c1;
+            transition: width 0.3s ease, left 0.3s ease;
+            transform: translateX(-50%);
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        nav a:hover {
+            color: #ffb6c1;
+        }
+        /* Mobile Menu Toggle & Header Actions */
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 2000;
+        }
+        
+        .theme-btn,
+        .mobile-menu-btn {
+            background: none;
+            border: none;
+            outline: none;
+            font-size: 1.4rem;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .theme-btn:hover {
+            color: #ffb6c1;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            font-size: 1.8rem;
+        }
+        
+        .mobile-menu-btn:hover {
+            color: #ffb6c1;
+        }
+        /* === HERO SECTION === */
+        
+        #hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            background: url('./assets/college.webp') center/cover no-repeat fixed;
+        }
+        
+        #hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--hero-overlay);
+            transition: background 0.5s ease;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            padding: 40px;
+            animation: fadeIn 2s ease-out;
+        }
+        
+        .hero-content h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            text-shadow: var(--hero-shadow);
+            color: var(--text-main);
+            transition: color 0.5s ease;
+        }
+        
+        #dynamic-text {
+            display: block;
+            font-style: italic;
+            color: #ffb6c1;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+        
+        .hero-content p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-inline: auto;
+            transition: color 0.5s ease;
+        }
+        
+        .btn-glass {
+            display: inline-block;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 182, 193, 0.4);
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease, color 0.5s ease;
+            box-shadow: 0 0 15px rgba(255, 182, 193, 0.2);
+            animation: float 4s ease-in-out infinite;
+            cursor: pointer;
+        }
+        
+        .btn-glass:hover {
+            background: rgba(255, 182, 193, 0.2);
+            box-shadow: 0 0 30px rgba(255, 182, 193, 0.6);
+            transform: translateY(-5px);
+        }
+        /* === SECTION SHARED STYLES === */
+        
+        section:not(#hero) {
+            padding: 100px 50px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 60px;
+            background: linear-gradient(45deg, var(--text-main), #a8a8a8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* === TEAM SECTION (Swiper) === */
+        
+        .swiper {
+            width: 100%;
+            padding-bottom: 50px !important;
+        }
+        
+        .swiper-slide {
+            width: 320px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+            opacity: 0.5;
+            transform: scale(0.85);
+            cursor: grab;
+        }
+        
+        .swiper-slide:active {
+            cursor: grabbing;
+        }
+        
+        .swiper-slide-active {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .team-card img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            border: 3px solid var(--primary-glow);
+            box-shadow: 0 0 20px rgba(255, 182, 193, 0.3);
+            background-color: var(--glass-bg);
+        }
+        
+        .team-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: var(--text-main);
+        }
+        
+        .team-card .role {
+            color: #ffb6c1;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        
+        .team-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .team-card button {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .team-card button:hover {
+            background: rgba(255, 182, 193, 0.1);
+            border-color: #ffb6c1;
+        }
+        
+        .swiper-pagination-bullet {
+            background: var(--text-muted) !important;
+        }
+        
+        .swiper-pagination-bullet-active {
+            background: #ffb6c1 !important;
+        }
+        /* === STORY SECTION (Center Split Vertical Timeline) === */
+        
+        .timeline-wrapper {
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 0;
+            display: block;
+        }
+        /* Central Line */
+        
+        .timeline-wrapper::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background: var(--primary-glow);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -2px;
+            z-index: 1;
+        }
+        
+        .timeline-card {
+            padding: 30px;
+            position: relative;
+            width: calc(50% - 40px);
+            margin-bottom: 40px;
+            opacity: 0;
+            transition: transform 0.6s ease-out, opacity 0.6s ease-out, box-shadow 0.3s;
+        }
+        
+        .timeline-card:nth-child(odd) {
+            left: 0;
+            transform: translateX(-50px);
+            text-align: right;
+        }
+        
+        .timeline-card:nth-child(even) {
+            left: calc(50% + 40px);
+            transform: translateX(50px);
+            text-align: left;
+        }
+        /* Triggered by IntersectionObserver */
+        
+        .timeline-card.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .timeline-card:hover {
+            box-shadow: 0 0 30px rgba(255, 182, 193, 0.3);
+            z-index: 3;
+        }
+        /* Timeline Connection Dots */
+        
+        .timeline-card::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--bg-color);
+            border: 4px solid #ffb6c1;
+            border-radius: 50%;
+            top: 35px;
+            z-index: 2;
+            transition: background 0.5s ease;
+        }
+        
+        .timeline-card:nth-child(odd)::after {
+            right: -52px;
+        }
+        
+        .timeline-card:nth-child(even)::after {
+            left: -52px;
+        }
+        
+        .timeline-card .date {
+            font-size: 0.85rem;
+            color: #ffb6c1;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        /* === POSTER SHOWCASE === */
+        
+        .showcase-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .poster-wrapper {
+            width: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+        }
+        
+        /* FIX: Ensure image scales correctly without invalid HTML width */
+        .poster-wrapper img {
+            width: 100%;
+            max-width: 450px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .poster-wrapper:hover img {
+            transform: scale(1.05);
+        }
+        
+        .poster-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        
+        .poster-wrapper:hover .poster-overlay {
+            opacity: 1;
+        }
+        
+        .poster-overlay i {
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.8);
+            transform: scale(0.5);
+            transition: transform 0.4s;
+        }
+        
+        .download-btn {
+            display: block;
+            width: fit-content;
+            margin: 40px auto 0;
+            padding: 12px 30px;
+            text-align: center;
+            color: var(--text-main);
+            text-decoration: none;
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+        
+        .download-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        /* LIGHTBOX & MODALS */
+        
+        #lightbox,
+        .custom-modal {
+            position: fixed;
+            inset: 0;
+            background: var(--modal-bg);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.4s;
+            padding: 20px;
+        }
+        
+        #lightbox.active,
+        .custom-modal.active {
+            display: flex;
+            opacity: 1;
+        }
+        
+        #lightbox img {
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 10px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+        }
+        
+        .modal-content {
+            position: relative;
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+            border-radius: 20px;
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .custom-modal.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .close-modal:hover {
+            color: #ffb6c1;
+        }
+        
+        .modal-body img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            border: 3px solid var(--primary-glow);
+            background-color: var(--glass-bg);
+        }
+        
+        .modal-body h3 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            color: var(--text-main);
+        }
+        
+        .modal-body .role {
+            color: #ffb6c1;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .modal-body p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        
+        #close-lightbox {
+            background: none;
+            border: none;
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            font-size: 2rem;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        #close-lightbox:hover {
+            color: #ffb6c1;
+        }
+        /* === CONTACT SECTION === */
+        
+        .contact-info {
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 50px;
+        }
+        
+        .contact-info h3 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .contact-info p {
+            color: var(--text-muted);
+            margin-bottom: 40px;
+        }
+        
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px 30px;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            width: 100%;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .contact-item:hover {
+            background: rgba(255, 182, 193, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .contact-item i {
+            font-size: 1.5rem;
+            color: #ffb6c1;
+        }
+        /* === FOOTER === */
+        
+        footer {
+            padding: 40px 20px;
+            margin-top: 50px;
+            border-top: 1px solid var(--glass-border);
+            text-align: center;
+            position: relative;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .footer-content h4 {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            margin-bottom: 5px;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #ffb6c1;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .social-icons a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            transition: all 0.3s;
+        }
+        
+        .social-icons a:hover {
+            background: #ffb6c1;
+            color: #000;
+            transform: translateY(-3px);
+        }
+        
+        .footer-bottom {
+            margin-top: 30px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        #back-to-top {
+            position: absolute;
+            right: 50px;
+            top: -25px;
+            width: 50px;
+            height: 50px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: var(--glass-shadow);
+        }
+        
+        #back-to-top:hover {
+            background: rgba(255, 182, 193, 0.2);
+            transform: translateY(-5px);
+        }
+        /* === SITE WIDE AUDIO TOGGLE === */
+        
+        #audio-toggle {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: var(--glass-shadow);
+        }
+        
+        #audio-toggle:hover {
+            background: rgba(255, 182, 193, 0.2);
+            transform: scale(1.1);
+            color: #ffb6c1;
+        }
+        /* === CIAURA AI CHAT WIDGET === */
+        
+        #chat-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        #chat-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffb6c1, #ff69b4);
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(255, 182, 193, 0.4);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #chat-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(255, 182, 193, 0.6);
+        }
+        
+        #chat-window {
+            width: 350px;
+            height: 450px;
+            background: var(--modal-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            transform-origin: bottom right;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        #chat-window.active {
+            display: flex;
+        }
+        
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        #chat-header {
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        #chat-header h4 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #chat-header h4 i {
+            color: #ffb6c1;
+        }
+        
+        #close-chat {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: color 0.3s;
+        }
+        
+        #close-chat:hover {
+            color: #ffb6c1;
+        }
+        
+        #chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            
+            /* FIX: Cross-browser scrollbars */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 182, 193, 0.3) transparent;
+        }
+        
+        #chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        #chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(255, 182, 193, 0.3);
+            border-radius: 10px;
+        }
+        
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            animation: fadeInMsg 0.3s ease;
+        }
+        
+        @keyframes fadeInMsg {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .msg-bot {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-bottom-left-radius: 5px;
+        }
+        
+        .msg-user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, rgba(255, 182, 193, 0.2), rgba(255, 105, 180, 0.2));
+            border: 1px solid rgba(255, 182, 193, 0.3);
+            border-bottom-right-radius: 5px;
+            color: var(--text-main);
+        }
+        
+        #chat-input-area {
+            padding: 15px;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            gap: 10px;
+        }
+        
+        #chat-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 10px 15px;
+            color: var(--text-main);
+            outline: none;
+            font-family: inherit;
+        }
+        
+        #chat-input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        #send-chat {
+            background: none;
+            border: none;
+            color: #ffb6c1;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            transition: transform 0.3s;
+        }
+        
+        #send-chat:hover {
+            transform: scale(1.1) translateX(2px);
+        }
+
+        .dot {
+            height: 6px;
+            width: 6px;
+            background-color: var(--text-muted);
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* =========================================
+           RESPONSIVE MOBILE STYLES
+           ========================================= */
+        
+        @media (max-width: 1024px) {
+            .contact-info {
+                padding: 20px 10px;
+            }
+            .contact-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 5px;
+            }
+            #back-to-top {
+                right: 20px;
+                width: 40px;
+                height: 40px;
+            }
+            #chat-window {
+                width: calc(100vw - 40px);
+                height: 400px;
+                right: 20px;
+                bottom: 80px;
+                position: fixed;
+            }
+            #chat-widget {
+                bottom: 20px;
+                right: 20px;
+            }
+            /* Audio toggle responsive */
+            #audio-toggle {
+                bottom: 20px;
+                left: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            #close-lightbox {
+                top: 15px;
+                right: 20px;
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .hero-content h1 {
+                font-size: 2.8rem;
+            }
+            .mobile-menu-btn {
+                display: block;
+            }
+            nav ul {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 250px;
+                height: 100vh;
+                background: var(--modal-bg);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 30px;
+                transition: right 0.4s ease-in-out;
+                border-left: 1px solid var(--glass-border);
+                box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+            }
+            nav ul.active {
+                right: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 2.5rem;
+                margin-bottom: 40px;
+            }
+            header {
+                padding: 15px 30px;
+            }
+            header.scrolled {
+                padding: 10px 30px;
+            }
+            .timeline-wrapper::after {
+                left: 20px;
+                margin-left: 0;
+            }
+            .timeline-card {
+                width: calc(100% - 50px);
+                left: 50px !important;
+                margin-bottom: 30px;
+                text-align: left !important;
+                transform: translateX(30px) !important;
+            }
+            .timeline-card.visible {
+                transform: translateX(0) !important;
+            }
+            .timeline-card:nth-child(odd)::after,
+            .timeline-card:nth-child(even)::after {
+                left: -42px;
+                right: auto;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            header {
+                padding: 15px 20px;
+            }
+            header.scrolled {
+                padding: 10px 20px;
+            }
+            section:not(#hero) {
+                padding: 60px 20px;
+            }
+            .hero-content {
+                padding: 20px;
+            }
+            .hero-content h1 {
+                font-size: 2.2rem;
+            }
+            .hero-content p {
+                font-size: 1rem;
+                margin-bottom: 30px;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .hero-content h1 {
+                font-size: 1.8rem;
+            }
+            .logo h1 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- FIX: Changed preload="none" to preload="auto" -->
+    <audio id="bgm-audio" loop preload="auto" src="./assets/sound.mp3"></audio>
+    <audio id="hover-audio" preload="auto" src="https://assets.mixkit.co/sfx/preview/mixkit-interface-click-1126.mp3"></audio>
+
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Global Audio Controller -->
+    <button id="audio-toggle" aria-label="Toggle Audio">
+        <i class="fas fa-volume-mute"></i>
+    </button>
+
+    <header id="header">
+        <div class="nav-container">
+            <div class="logo">
+                <h1>CIAURA</h1>
+                <p>(SCE) Poster Viewing Site</p>
+            </div>
+
+            <div class="header-actions">
+                <button class="theme-btn" id="theme-btn" aria-label="Toggle Theme">
+                    <i class="fas fa-moon" title="Toggle Theme"></i>
+                </button>
+                <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle Mobile Menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <nav>
+                <ul id="nav-links">
+                    <li><a href="#hero">Home</a></li>
+                    <li><a href="#team">Team</a></li>
+                    <li><a href="#story">Story</a></li>
+                    <li><a href="#showcase">Showcase</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section id="hero">
+        <div class="hero-content">
+            <h1>ONE DAY – <br>
+                <span id="dynamic-text">(A THOUSAND MEMORIES)</span>
+            </h1>
+            <p>A visual journey that captures unforgettable moments, cherished friendships, and memories that will last forever. Explore the story behind the poster and relive every meaningful chapter.</p>
+            <button class="btn-glass" onclick="openLightbox()">View Poster</button>
+        </div>
+    </section>
+
+    <!-- UPDATED TEAM SECTION -->
+    <section id="team">
+        <h2 class="section-title">The Visionaries</h2>
+        <div class="swiper teamSwiper">
+            <div class="swiper-wrapper">
+                
+                <!-- SHARATH K V -->
+                <div class="swiper-slide glass-panel team-card">
+                    <!-- Added an onerror fallback so UI doesn't break if sharath.jpeg is not found -->
+                    <img src="./assets/sharath.jpeg" alt="UI/UX Designer and Team Leader" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop'">
+                    <h3>SHARATH K V</h3>
+                    <div class="role">UI/UX Designer (Team Leader) <br> CSE B II</div>
+                    <p>Leading the team and crafting the fluid, intuitive glassmorphism user experience.</p>
+                    <button onclick="openTeamModal('SHARATH K V', 'UI/UX Designer (Team Leader) | CSE B II', 'As the Team Leader and UI/UX Designer from CSE B II, Sharath specializes in weaving cinematic visual stories into seamless digital interfaces. He guided the central vision of CIAURA, ensuring the user journey perfectly matches the emotional weight of our thousand memories.', './assets/sharath.jpeg')">View Details</button>
+                </div>
+                
+                <!-- YASWANTH M -->
+                <div class="swiper-slide glass-panel team-card">
+                    <img src="./assets/YASH.jpeg" alt="Audio Designer" onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop'">
+                    <h3>YASWANTH M</h3>
+                    <div class="role">Audio Designer <br> CSE B II</div>
+                    <p>Curating the immersive atmospheric soundscapes and interactive audio experiences.</p>
+                    <button onclick="openTeamModal('YASWANTH M', 'Audio Designer | CSE B II', 'Representing CSE B II, Yaswanth is the auditory architect behind the project. As Audio Designer, he selected and integrated the ethereal background scores and interactive sound effects that give the One Day exhibition its emotional depth and soul.', './assets/YASH.jpeg')">View Details</button>
+                </div>
+                
+                <!-- SHREYA RAMANATHAN -->
+                <div class="swiper-slide glass-panel team-card">
+                    <img src="./assets/shre.jpeg" alt="Poster Designer" onerror="this.src='https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop'">
+                    <h3>SHREYA RAMANATHAN</h3>
+                    <div class="role">Poster Designer <br> CSE B II</div>
+                    <p>Translating raw emotions into a cohesive, cinematic digital masterpiece.</p>
+                    <button onclick="openTeamModal('SHREYA RAMANATHAN', 'Poster Designer | CSE B II', 'Hailing from CSE B II, Shreya is the creative force behind the visual artwork. As the Poster Designer, she masterfully blended photography, elegant typography, and digital art to create the stunning centerpiece of the exhibition.', './assets/shre.jpeg')">View Details</button>
+                </div>
+
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </section>
+
+    <section id="story">
+        <h2 class="section-title">Our Journey</h2>
+        <div class="timeline-wrapper">
+            <div class="glass-panel timeline-card">
+                <div class="date">Phase 01</div>
+                <h3>Idea Formation</h3>
+                <p>The initial spark. Brainstorming the concept of capturing fleeting time and turning a single day into an eternity of visual memories.</p>
+            </div>
+            <div class="glass-panel timeline-card">
+                <div class="date">Phase 02</div>
+                <h3>Planning & Scouting</h3>
+                <p>Mapping out the narrative arc, finding the perfect locations, and setting the emotional tone for the overarching aesthetic.</p>
+            </div>
+            <div class="glass-panel timeline-card">
+                <div class="date">Phase 03</div>
+                <h3>Design Process</h3>
+                <p>Iterating through color palettes, typography, and ethereal layouts to ensure the visual matched the emotion.</p>
+            </div>
+            <div class="glass-panel timeline-card">
+                <div class="date">Phase 04</div>
+                <h3>Poster Development</h3>
+                <p>The convergence of photography and digital art, piecing together the elements into a singular masterpiece.</p>
+            </div>
+            <div class="glass-panel timeline-card">
+                <div class="date">Phase 05</div>
+                <h3>Final Showcase</h3>
+                <p>Presenting the final piece to the world through an immersive digital experience.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="showcase">
+        <h2 class="section-title">The Masterpiece</h2>
+        <div class="showcase-container glass-panel">
+            <div class="poster-wrapper" onclick="openLightbox()">
+                <!-- FIX: Removed width="30% !important", replaced with cleaner CSS styling -->
+                <img src="./assets/poster.webp" alt="One Day A Thousand Memories Poster" id="main-poster-img">
+                <div class="poster-overlay">
+                    <i class="fas fa-search-plus"></i>
+                </div>
+            </div>
+            <a href="./assets/poster.webp" target="_blank" class="download-btn" download><i class="fas fa-download"></i> Download High-Res</a>
+        </div>
+    </section>
+
+    <div id="lightbox">
+        <button id="close-lightbox" class="close-modal" aria-label="Close Lightbox" onclick="closeLightbox()"><i class="fas fa-times"></i></button>
+        <img src="" alt="Fullscreen Poster" id="lightbox-img">
+    </div>
+
+    <div id="team-modal" class="custom-modal">
+        <div class="modal-content glass-panel">
+            <button class="close-modal" aria-label="Close Modal" onclick="closeTeamModal()"><i class="fas fa-times"></i></button>
+            <div class="modal-body" id="team-modal-body">
+            </div>
+        </div>
+    </div>
+
+    <section id="contact">
+        <h2 class="section-title">Connect With Us</h2>
+        <div class="glass-panel contact-info">
+            <h3>Let's Talk</h3>
+            <p>Have questions about the poster, the team, or the project? Reach out to us directly through our channels.</p>
+
+            <div class="contact-details">
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <span><strong>Email:</strong> k.v.sharath2711@gmail.com</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <span><strong>Phone:</strong> +919384837040</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span><strong>Location:</strong> CSE Dept, Saranathan College of Engg, Panjappur, Trichy, Tamilnadu</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="glass-panel">
+        <a href="#hero" id="back-to-top" aria-label="Back to Top"><i class="fas fa-arrow-up"></i></a>
+        <div class="footer-content">
+            <h4>CIAURA (SCE)</h4>
+            <p style="color: var(--text-muted); margin-bottom: 10px;">School of Creative Engineering • Visual Arts</p>
+
+            <div class="footer-links">
+                <a href="#hero">Home</a>
+                <a href="#team">Team</a>
+                <a href="#story">Story</a>
+                <a href="#showcase">Poster</a>
+            </div>
+
+            <div class="social-icons">
+                <a href="https://instagram.com/sha.27.rath" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://github.com/sharath-2711" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://saranathan.ac.in/" target="_blank" aria-label="College Site"><i class="fas fa-university"></i></a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 CIAURA (SCE). All rights reserved. Fluid Glassmorphism Design.
+        </div>
+    </footer>
+
+    <!-- FIX: Uncommented Chat Widget to prevent null reference JS errors -->
+    <div id="chat-widget">
+        <div id="chat-window" class="glass-panel">
+            <div id="chat-header">
+                <h4><i class="fas fa-sparkles"></i> CIAURA AI Docent</h4>
+                <button id="close-chat" aria-label="Close Chat"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="chat-messages">
+                <div class="message msg-bot">
+                    Hello! I'm the CIAURA AI. I can answer questions about the "One Day" poster, our team, or the story behind our project. How can I guide you today?
+                </div>
+            </div>
+            <div id="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Ask about the exhibition..." autocomplete="off">
+                <button id="send-chat" aria-label="Send Message"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+        <button id="chat-toggle" aria-label="Open AI Chat">
+            <i class="fas fa-comment-alt"></i>
+        </button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+    <script>
+        // --- Audio System & Controls ---
+        const bgmAudio = document.getElementById('bgm-audio');
+        const hoverAudio = document.getElementById('hover-audio');
+        const audioToggleBtn = document.getElementById('audio-toggle');
+        const audioIcon = audioToggleBtn.querySelector('i');
+
+        hoverAudio.volume = 0.2;
+        bgmAudio.volume = 0.3;
+        let audioStarted = false;
+
+        // Auto-play on first background click
+        document.body.addEventListener('click', () => {
+            if (!audioStarted) {
+                bgmAudio.play().then(() => {
+                    audioIcon.classList.replace('fa-volume-mute', 'fa-volume-up');
+                }).catch(e => console.log("Audio play prevented by browser."));
+                audioStarted = true;
+            }
+        }, {
+            once: true
+        });
+
+        // User explicit toggle for background music
+        audioToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevents triggering the body click event simultaneously
+            if (bgmAudio.paused) {
+                bgmAudio.play();
+                audioIcon.classList.replace('fa-volume-mute', 'fa-volume-up');
+            } else {
+                bgmAudio.pause();
+                audioIcon.classList.replace('fa-volume-up', 'fa-volume-mute');
+            }
+            audioStarted = true;
+        });
+
+        // Hover audio for navigation and buttons
+        const interactables = document.querySelectorAll('nav a, button, .btn-glass, .contact-item, .social-icons a, .poster-wrapper');
+        interactables.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                hoverAudio.currentTime = 0;
+                hoverAudio.play().catch(e => {});
+            });
+        });
+
+        // --- Theme Toggle Logic ---
+        const themeBtn = document.getElementById('theme-btn');
+        const themeIcon = themeBtn.querySelector('i');
+        let isDarkMode = true;
+
+        themeBtn.addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            if (isDarkMode) {
+                document.body.removeAttribute('data-theme');
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+            } else {
+                document.body.setAttribute('data-theme', 'light');
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            }
+        });
+
+        // --- Mobile Menu Toggle Logic ---
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenuIcon = mobileMenuBtn.querySelector('i');
+        const navUl = document.getElementById('nav-links');
+        const navItems = navUl.querySelectorAll('a');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            navUl.classList.toggle('active');
+            if (navUl.classList.contains('active')) {
+                mobileMenuIcon.classList.replace('fa-bars', 'fa-times');
+            } else {
+                mobileMenuIcon.classList.replace('fa-times', 'fa-bars');
+            }
+        });
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navUl.classList.remove('active');
+                mobileMenuIcon.classList.replace('fa-times', 'fa-bars');
+            });
+        });
+
+        // --- Sticky Header ---
+        window.addEventListener("scroll", () => {
+            const header = document.getElementById("header");
+            if (window.scrollY > 50) {
+                header.classList.add("scrolled");
+            } else {
+                header.classList.remove("scrolled");
+            }
+        });
+
+        // --- Dynamic Rotating Text ---
+        const phrases = [
+            "(A THOUSAND MEMORIES)",
+            "(ENDLESS MOMENTS)",
+            "(BEAUTIFUL JOURNEYS)",
+            "(UNFORGETTABLE STORIES)",
+            "(TIMELESS CONNECTIONS)"
+        ];
+        let textIndex = 0;
+        const dynamicText = document.getElementById('dynamic-text');
+
+        setInterval(() => {
+            dynamicText.style.opacity = 0;
+            dynamicText.style.transform = "translateY(10px)";
+
+            setTimeout(() => {
+                textIndex = (textIndex + 1) % phrases.length;
+                dynamicText.innerText = phrases[textIndex];
+                dynamicText.style.opacity = 1;
+                dynamicText.style.transform = "translateY(0)";
+            }, 500);
+        }, 3500);
+
+        // --- 3D Team Swiper Initialization ---
+        const swiper = new Swiper(".teamSwiper", {
+            effect: "coverflow",
+            grabCursor: true,
+            centeredSlides: true,
+            slidesPerView: "auto",
+            loop: true,
+            coverflowEffect: {
+                rotate: 0,
+                stretch: 0,
+                depth: 100,
+                modifier: 2,
+                slideShadows: false,
+            },
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+            breakpoints: {
+                320: {
+                    slidesPerView: 1
+                },
+                768: {
+                    slidesPerView: "auto"
+                }
+            }
+        });
+
+        // --- Timeline Scroll Animation (Intersection Observer) ---
+        const timelineCards = document.querySelectorAll('.timeline-card');
+
+        const timelineObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.2
+        });
+
+        timelineCards.forEach(card => {
+            timelineObserver.observe(card);
+        });
+
+        // --- Lightbox & Modal Functionality ---
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const mainPoster = document.getElementById('main-poster-img');
+
+        function openLightbox() {
+            lightboxImg.src = mainPoster.src;
+            lightbox.classList.add('active');
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+        }
+
+        lightbox.addEventListener('click', (e) => {
+            if (e.target !== lightboxImg && e.target.closest('#close-lightbox') === null) {
+                closeLightbox();
+            }
+        });
+
+        const teamModal = document.getElementById('team-modal');
+        const teamModalBody = document.getElementById('team-modal-body');
+
+        function openTeamModal(name, role, description, imgUrl) {
+            // Include a fallback image setup if the modal image fails to load
+            const fallbackUrl = './assets/poster.webp';
+            teamModalBody.innerHTML = `
+                <img src="${imgUrl}" alt="${name}" onerror="this.src='${fallbackUrl}'">
+                <h3>${name}</h3>
+                <div class="role">${role}</div>
+                <p>${description}</p>
+            `;
+            teamModal.classList.add('active');
+        }
+
+        function closeTeamModal() {
+            teamModal.classList.remove('active');
+        }
+
+        teamModal.addEventListener('click', (e) => {
+            if (e.target === teamModal) {
+                closeTeamModal();
+            }
+        });
+
+        // --- High-DPI Cherry Blossom Particle Engine (Canvas) ---
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let logicalWidth, logicalHeight;
+        let particles = [];
+        const numParticles = 30; // Restored quantity for a gentle, slow fall
+
+        function resizeCanvas() {
+            const dpr = window.devicePixelRatio || 1;
+            logicalWidth = window.innerWidth;
+            logicalHeight = window.innerHeight;
+
+            canvas.width = logicalWidth * dpr;
+            canvas.height = logicalHeight * dpr;
+
+            ctx.scale(dpr, dpr);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * logicalWidth;
+                this.y = Math.random() * logicalHeight - logicalHeight;
+                this.size = Math.random() * 5 + 3; // Restored to original larger size
+                this.speedY = Math.random() * 0.4 + 0.15; // Significantly slowed down fall speed
+                this.speedX = (Math.random() - 0.5) * 0.5; // Slower horizontal drift
+                this.angle = Math.random() * Math.PI * 2;
+                this.spin = (Math.random() - 0.5) * 0.02; // Slower rotation speed
+                this.sway = Math.random() * Math.PI * 2;
+                this.swaySpeed = Math.random() * 0.01 + 0.005; // Slower swaying motion
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX + Math.sin(this.sway) * 1.2;
+                this.angle += this.spin;
+                this.sway += this.swaySpeed;
+
+                // Reset to top when falling off screen
+                if (this.y > logicalHeight + 20) {
+                    this.y = -20;
+                    this.x = Math.random() * logicalWidth;
+                }
+                if (this.x > logicalWidth + 20) this.x = -20;
+                if (this.x < -20) this.x = logicalWidth + 20;
+            }
+
+            draw() {
+                ctx.save();
+                const isLight = document.body.getAttribute('data-theme') === 'light';
+                // Minimized: Lowered opacity for subtlety 
+                const color = isLight ? 'rgba(255, 105, 180, 0.3)' : 'rgba(255, 182, 193, 0.2)';
+
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+
+                ctx.beginPath();
+                // Draw a simple petal shape using bezier curves
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(this.size, -this.size, this.size * 2, this.size / 2, 0, this.size);
+                ctx.bezierCurveTo(-this.size * 2, this.size / 2, -this.size, -this.size, 0, 0);
+
+                ctx.fillStyle = color;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = color;
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        for (let i = 0; i < numParticles; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, logicalWidth, logicalHeight);
+
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        animateParticles();
+
+        // --- Gemini AI Chat Logic ---
+        const chatToggle = document.getElementById('chat-toggle');
+        const chatWindow = document.getElementById('chat-window');
+        const closeChat = document.getElementById('close-chat');
+        const chatInput = document.getElementById('chat-input');
+        const sendChatBtn = document.getElementById('send-chat');
+        const chatMessages = document.getElementById('chat-messages');
+
+        let chatHistory = [];
+
+        chatToggle.addEventListener('click', () => {
+            chatWindow.classList.add('active');
+            chatToggle.style.display = 'none';
+        });
+
+        closeChat.addEventListener('click', () => {
+            chatWindow.classList.remove('active');
+            setTimeout(() => {
+                chatToggle.style.display = 'flex';
+            }, 300);
+        });
+
+        function appendMessage(text, sender) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message');
+            msgDiv.classList.add(sender === 'user' ? 'msg-user' : 'msg-bot');
+
+            if (sender === 'bot') {
+                text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            }
+
+            msgDiv.innerHTML = text;
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function toggleTyping(show) {
+            if (show) {
+                const typingDiv = document.createElement('div');
+                typingDiv.id = 'typing-indicator';
+                typingDiv.classList.add('message', 'msg-bot', 'typing-indicator');
+                typingDiv.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+                chatMessages.appendChild(typingDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            } else {
+                const indicator = document.getElementById('typing-indicator');
+                if (indicator) indicator.remove();
+            }
+        }
+
+        // FIX: Implementation of Exponential Backoff for API requests
+        async function fetchWithRetry(url, options) {
+            const delays = [1000, 2000, 4000, 8000, 16000];
+            
+            for (let i = 0; i < delays.length; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response;
+                } catch (error) {
+                    if (i === delays.length - 1) throw error;
+                    await new Promise(res => setTimeout(res, delays[i]));
+                }
+            }
+        }
+
+        async function getGeminiResponse(userText) {
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            const systemPrompt = `You are the friendly, elegant AI docent for the CIAURA (SCE) poster viewing website...`;
+
+            const contents = chatHistory.map(msg => ({
+                role: msg.role,
+                parts: [{
+                    text: msg.text
+                }]
+            }));
+
+            contents.push({
+                role: "user",
+                parts: [{
+                    text: userText
+                }]
+            });
+
+            const payload = {
+                contents: contents,
+                systemInstruction: {
+                    parts: [{
+                        text: systemPrompt
+                    }]
+                }
+            };
+
+            try {
+                const response = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                const candidate = result.candidates?.[0];
+
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const text = candidate.content.parts[0].text;
+                    chatHistory.push({
+                        role: "user",
+                        text: userText
+                    });
+                    chatHistory.push({
+                        role: "model",
+                        text: text
+                    });
+                    return text;
+                } else {
+                    return "I apologize, but I'm having trouble interpreting that right now. Please try asking again.";
+                }
+            } catch (error) {
+                return "The ethereal connection was lost. Please check your internet or try again later.";
+            }
+        }
+
+        async function handleSend() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            chatInput.value = '';
+            appendMessage(text, 'user');
+            toggleTyping(true);
+
+            const responseText = await getGeminiResponse(text);
+
+            toggleTyping(false);
+            appendMessage(responseText, 'bot');
+        }
+
+        sendChatBtn.addEventListener('click', handleSend);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
+    </script>
+</body>
+
+</html>
